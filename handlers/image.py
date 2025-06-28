@@ -1,12 +1,13 @@
 import base64
 import io
-from fastapi import FastAPI, Request
+import requests
+
+from fastapi import APIRouter, File, UploadFile, Form
 from fastapi.responses import JSONResponse
 from PIL import Image
 import numpy as np
-import requests
 
-app = FastAPI()
+router = APIRouter()
 
 def rgb2hex(rgb):
     return '#%02x%02x%02x' % tuple(rgb)
@@ -22,31 +23,6 @@ def extract_palette(img, max_colors=6, step=10):
             color_counts[t] = color_counts.get(t, 0) + 1
     palette = sorted(color_counts, key=color_counts.get, reverse=True)[:max_colors]
     return [rgb2hex(c) for c in palette]
-
-def contrast_ratio(rgb1, rgb2):
-    def luminance(rgb):
-        a = [v/255.0 for v in rgb]
-        a = [v/12.92 if v<=0.03928 else ((v+0.055)/1.055)**2.4 for v in a]
-        return 0.2126*a[0] + 0.7152*a[1] + 0.0722*a[2]
-    l1 = luminance(rgb1)
-    l2 = luminance(rgb2)
-    lighter = max(l1, l2)
-    darker = min(l1, l2)
-    return (lighter+0.05)/(darker+0.05)
-
-def palette_contrast(palette):
-    from itertools import combinations
-    pairs = []
-    rgb_palette = [tuple(int(x[i:i+2],16) for i in (1,3,5)) for x in palette]
-    for i, j in combinations(range(len(palette)), 2):
-        ratio = contrast_ratio(rgb_palette[i], rgb_palette[j])
-        pairs.append({
-            'color1': palette[i],
-            'color2': palette[j],
-            'ratio': round(ratio, 2),
-            'wcagAA': ratio >= 4.5
-        })
-    return pairs
 
 def simulate_blind(img, mode):
     arr = np.array(img.convert('RGB'))
@@ -66,35 +42,32 @@ def simulate_blind(img, mode):
     out = sim.reshape(arr.shape)
     return Image.fromarray(out)
 
-@app.post("/api/image")
-async def analyze_image(request: Request):
-    data = await request.json()
-    image_base64 = data.get('imageBase64')
-    gemini_api_key = data.get('geminiApiKey')
-    simulate_type = data.get('simulateType')
-    if not image_base64:
-        return JSONResponse({"error": "Missing image data"}, status_code=400)
-
-    raw = base64.b64decode(image_base64.split(',')[-1])
-    img = Image.open(io.BytesIO(raw)).convert('RGB')
+@router.post("/api/image")
+async def analyze_image(
+    file: UploadFile = File(...), 
+    simulateType: str = Form(None), 
+    geminiApiKey: str = Form(None)
+):
+    img_bytes = await file.read()
+    img = Image.open(io.BytesIO(img_bytes)).convert('RGB')
+    
     palette = extract_palette(img)
-    contrast = palette_contrast(palette)
-    colorblind = {
-        'protanopia': [rgb2hex(simulate_blind(Image.new('RGB', (1, 1), c), 'protanopia').getpixel((0, 0))) for c in palette],
-        'deuteranopia': [rgb2hex(simulate_blind(Image.new('RGB', (1, 1), c), 'deuteranopia').getpixel((0, 0))) for c in palette],
-        'tritanopia': [rgb2hex(simulate_blind(Image.new('RGB', (1, 1), c), 'tritanopia').getpixel((0, 0))) for c in palette],
-        'achromatopsia': [rgb2hex(simulate_blind(Image.new('RGB', (1, 1), c), 'achromatopsia').getpixel((0, 0))) for c in palette]
-    }
-
     simulated_image_base64 = None
-    if simulate_type in ['protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia']:
-        sim_img = simulate_blind(img, simulate_type)
+    if simulateType in ['protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia']:
+        sim_img = simulate_blind(img, simulateType)
         with io.BytesIO() as output:
             sim_img.save(output, format="PNG")
             simulated_image_base64 = "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
-
+    else:
+        simulated_image_base64 = None
+    
+    # Original image as base64
+    with io.BytesIO() as output:
+        img.save(output, format="PNG")
+        original_image_base64 = "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
+    
     aiAnalysis = None
-    if gemini_api_key:
+    if geminiApiKey:
         prompt = f"""
 You are an expert in color theory and accessibility.
 Given this palette: {', '.join(palette)}, please:
@@ -105,7 +78,7 @@ Given this palette: {', '.join(palette)}, please:
 Respond in JSON with keys: harmony, accessibility, suggestions, description.
         """.strip()
         resp = requests.post(
-            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={gemini_api_key}",
+            f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={geminiApiKey}",
             json={
                 "contents": [{"parts": [{"text": prompt}]}]
             },
@@ -122,9 +95,8 @@ Respond in JSON with keys: harmony, accessibility, suggestions, description.
             aiAnalysis = {'error': 'Gemini error', 'raw': resp.text}
 
     return JSONResponse({
+        'originalImage': original_image_base64,
+        'simulatedImage': simulated_image_base64,
         'palette': palette,
-        'contrast': contrast,
-        'colorblind': colorblind,
         'aiAnalysis': aiAnalysis,
-        'simulatedImageBase64': simulated_image_base64
     })
