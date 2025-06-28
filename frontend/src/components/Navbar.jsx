@@ -1,40 +1,48 @@
-import React from 'react'
-import {
-  CContainer,
-  CNavbar,
-  CNavbarBrand,
-  CNavbarNav,
-  CNavItem,
-  CNavLink,
-} from '@coreui/react'
+import React from 'react';
 
-export const Navbar = () => {
+const Navbar = () => {
   return (
-    <CNavbar className="bg-black text-white" style={{ borderBottom: "1px solid #333" }}
+    <div
+  style={{
+    position: 'fixed',
+  
+    top: '5%',
+    left: '1%',
+    width: '98vw',
+    padding: '10px 20px',
+    backgroundColor: 'rgba(20, 20, 45, 0.7)',
+    backdropFilter: 'blur(10px)',
+    WebkitBackdropFilter: 'blur(10px)',
+    borderRadius: '12px',
+    border: '1px solid rgba(0, 240, 255, 0.2)',
+   height: '8vh',
+
+    
+    
+  }}
 >
-      <CContainer fluid>
-        <CNavbarNav className="d-flex flex-row align-items-center gap-4">
-          <CNavbarBrand  style={{
+      <nav className="d-flex justify-content-between align-items-center">
+        <a style={{
             color: '#00f0ff',
             fontWeight: 'bold',
             textShadow: '0 0 10px rgba(0, 255, 255, 0.4)',
-          }}>Nuxe Aurea</CNavbarBrand>
-          <CNavItem>
-            <CNavLink href="/" className="text-white">Home</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="/About" className="text-white">Features</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="/Try" className="text-white">Generate Image for colourblindness</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="/Results" className="text-white">Generated Results</CNavLink>
-          </CNavItem>
-        </CNavbarNav>
-      </CContainer>
-    </CNavbar>
-  )
-}
+            textDecoration:'none'
+          }}
+        >
+          Nuxe Aurea
+        </a>
 
-export default Navbar
+        <div className="d-none d-sm-flex gap-3 align-items-center">
+          <a href="/" className="text-white text-decoration-none">Home</a>
+          <a href="/About" className="text-white text-decoration-none">Features</a>
+          <a href="/Try" className="text-white text-decoration-none">Generate Image</a>
+          <a href="/Results" className="text-white text-decoration-none">Results</a>
+        </div>
+
+        <a href="/login" className="d-sm-none text-white text-decoration-none">Login</a>
+      </nav>
+    </div>
+  );
+};
+
+export default Navbar;

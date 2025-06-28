@@ -4,7 +4,14 @@ import { CFooter, CLink } from '@coreui/react';
 const Footer = () => {
   return (
     <CFooter
-      className="bg-black text-white justify-content-between px-4 py-4 border-top border-secondary"
+      className="text-white justify-content-between px-4 py-4 border-top border-secondary"
+      style={{
+        background:"#FEAD13",
+            height: '8vh',
+    display: 'flex',
+    alignItems: 'center',
+
+      }}
     >
       <div>
         <CLink

@@ -14,8 +14,9 @@ import Textp1 from './components/Textp1'
 function App() {
   return (
     <Router> 
-      <Navbar />
       <Bg>
+      <Navbar />
+      
       
 <Routes>
   <Route path="/" element={
