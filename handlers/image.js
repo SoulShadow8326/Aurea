@@ -3,13 +3,14 @@ import chroma from 'chroma-js'
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 const colorBlind = require('color-blind')
+const daltonize = require('daltonize')
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { imageBase64 } = req.body
+  const { imageBase64, colorBlindType } = req.body
   const apiKey = process.env.GEMINI_API_KEY
 
   if (!imageBase64) {
@@ -92,12 +93,46 @@ Respond in JSON with keys: harmony, accessibility, suggestions, description.
       }
     }
 
+    let correctedImageBase64 = null
+    if (colorBlindType && ['protanopia', 'deuteranopia', 'tritanopia'].includes(colorBlindType)) {
+      const imgData = {
+        width,
+        height,
+        data: new Uint8ClampedArray(width * height * 4)
+      }
+      let k = 0
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const { r, g, b, a } = Jimp.intToRGBA(image.getPixelColor(x, y))
+          imgData.data[k++] = r
+          imgData.data[k++] = g
+          imgData.data[k++] = b
+          imgData.data[k++] = a
+        }
+      }
+      const corrected = daltonize.correct(imgData, colorBlindType)
+      k = 0
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4
+          image.setPixelColor(Jimp.rgbaToInt(
+            corrected.data[idx],
+            corrected.data[idx + 1],
+            corrected.data[idx + 2],
+            corrected.data[idx + 3]
+          ), x, y)
+        }
+      }
+      correctedImageBase64 = await image.getBase64Async(Jimp.MIME_PNG)
+    }
+
     res.status(200).json({
       palette,
       contrast,
       colorblind,
       aiAnalysis,
-      usedGeminiKey: !!apiKey
+      usedGeminiKey: !!apiKey,
+      correctedImageBase64
     })
   } catch (e) {
     res.status(500).json({ error: 'Failed to process image' })
