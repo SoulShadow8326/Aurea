@@ -11,9 +11,9 @@ const Bg = ({ children }) => {
       case '/About':
         return 'radial-gradient(ellipse at top, #FEAD13 20%, #14142D 60%, #ffffff 100%)';
       case '/Try':
-        return 'linear-gradient(to bottom, #ff5f6d, #ffc371)';
+        return '#14142D';
       case '/Results':
-        return 'linear-gradient(to bottom, #ff5f6d, #ffc371)';
+        return '#14142D';
       default:
         return '#14142D';
     }
