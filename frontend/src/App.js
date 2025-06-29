@@ -1,42 +1,20 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Try from './pages/Try';
-import About from './pages/About';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Bg from './components/Bg';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import Footer from './components/Footer';
-import Results from './pages/Results';
-
-
-import Textp1 from './components/Textp1'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Layout from "./components/Layout";
+import Hero from "./components/Hero";
+import Try from "./pages/Try";
+import About from "./pages/About";
 
 function App() {
   return (
-    <Router> 
-      <Bg>
-      <Navbar />
-      
-      
-<Routes>
-  <Route path="/" element={
-    <>
-  <Textp1 />
-  <Hero />
-      
-    </>
-    
-    
-  } />
-  <Route path="/About" element={<About />} />
-  <Route path="/Try" element={<Try />} />
-  <Route path="/Results" element={<Results />} />
-</Routes>
-</Bg>
-<Footer />
-
+    <Router>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/try" element={<Try />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </Layout>
     </Router>
   );
 }
-
 export default App;

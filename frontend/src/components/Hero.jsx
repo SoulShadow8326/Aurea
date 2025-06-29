@@ -1,12 +1,17 @@
-import React from 'react';
+import AureaLogo from "./AureaLogo";
 
-const Hero = () => {
+export default function Hero() {
   return (
-    <div>
-  
-
+    <div
+      style={{
+        width: "100vw",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+      }}
+    >
+      <AureaLogo />
     </div>
   );
-};
-
-export default Hero;
+}
