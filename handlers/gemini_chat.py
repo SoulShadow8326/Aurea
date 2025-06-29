@@ -16,8 +16,13 @@ AUREA_CONTEXT = (
     "Gemini, you are Aurea's assistant. Respond as a helpful, insightful, and creative design assistant."
 )
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
+def get_gemini_api_key():
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=os.path.join(os.path.dirname(os.path.abspath(__file__)), '../.env'), override=True)
+        key = os.environ.get("GEMINI_API_KEY")
+    return key
 
 @router.post("/gemini-chat")
 async def gemini_chat(request: Request):
@@ -29,8 +34,12 @@ async def gemini_chat(request: Request):
             {"parts": [{"text": user_message}]}
         ]
     }
+    api_key = get_gemini_api_key()
+    if not api_key:
+        return JSONResponse({"reply": "Error: GEMINI_API_KEY not set in environment."}, status_code=500)
+    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
     try:
-        resp = requests.post(GEMINI_API_URL, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
+        resp = requests.post(api_url, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
         rj = resp.json()
         reply = rj.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Sorry, I couldn't get a response.")
         return JSONResponse({"reply": reply})
