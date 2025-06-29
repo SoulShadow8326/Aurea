@@ -38,7 +38,7 @@ const HomePage = () => {
           </div>
           <button 
             className="secondary-btn" 
-            style={{marginTop: 18, background: "rgba(255,255,255,0.20)", color: "#222", fontWeight: 700, border: "none", boxShadow: "none"}}
+            style={{marginTop: 18, background: "rgb(255, 255, 255)", color: "#222", fontWeight: 700, border: "none", boxShadow: "none"}}
             onClick={() => navigate('/queries')}
           >
             FAQ

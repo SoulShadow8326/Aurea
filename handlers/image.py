@@ -1,6 +1,5 @@
 import base64
 import io
-import requests
 from fastapi import APIRouter, File, UploadFile, Form
 from fastapi.responses import JSONResponse
 from PIL import Image
@@ -40,36 +39,6 @@ def simulate_blind(img, mode):
     out = sim.reshape(arr.shape)
     return Image.fromarray(out)
 
-def get_gemini_feedback(palette):
-    prompt = f"""
-Aurea is a real-time AI-powered assistant that transforms how we understand and fix color in design, especially for accessibility. It allows artists to upload an image, instantly extract and get their palette analyzed, and uses Gemini to assess harmony, contrast, and emotional tone. But more importantly, Aurea doesn’t stop at analysis. It actively simulates how the artwork appears to people with different types of colorblindness, and then converts it back into a palette optimized for normal vision, preserving the mood, composition and intent. For colorblinded artists, this means they can verify how their work appears to non-color blind viewers, as it will change colourblind artworks into normal colours.
-Aurea then calls Gemini to narrate the palette: emotionally, culturally, and technically. It tells the user what they are actually communicating through color and how to fix it if it's missing the mark.
-
-Palette: {', '.join(palette)}
-
-Give a concise, readable, and insightful analysis for the user, including:
-- Color harmony (complementary, analogous, triadic, etc)
-- Accessibility risks (contrast, color confusion)
-- Suggestions for improvement
-- Artistic and emotional description
-
-Respond in plain text, not JSON.
-    """.strip()
-    api_key = "AIzaSyD1-1Qw8Qn8Qw8Qn8Qw8Qn8Qw8Qn8Qw8Q"  # Replace with your Gemini API key
-    resp = requests.post(
-        f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}",
-        json={
-            "contents": [{"parts": [{"text": prompt}]}]
-        },
-        headers={'Content-Type': 'application/json'}
-    )
-    try:
-        rj = resp.json()
-        txt = rj['candidates'][0]['content']['parts'][0]['text']
-        return txt
-    except Exception:
-        return None
-
 @router.post("/image")
 async def analyze_image(
     file: UploadFile = File(...),
@@ -88,12 +57,10 @@ async def analyze_image(
         with io.BytesIO() as output:
             img.save(output, format="PNG")
             original_image_base64 = "data:image/png;base64," + base64.b64encode(output.getvalue()).decode()
-        gemini_feedback = get_gemini_feedback(palette)
         return JSONResponse({
             'originalImage': original_image_base64,
             'simulatedImage': simulated_image_base64,
-            'palette': palette,
-            'geminiFeedback': gemini_feedback
+            'palette': palette
         })
     except Exception as e:
         return JSONResponse({'error': str(e)}, status_code=400)

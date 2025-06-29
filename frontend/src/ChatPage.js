@@ -68,7 +68,23 @@ export default function ChatPage() {
           )}
           {messages.map((msg, i) => (
             <div key={i} style={{ display: "flex", justifyContent: msg.sender === "user" ? "flex-end" : "flex-start", width: "100%" }}>
-              <span style={{ display: "inline-block", padding: "22px 36px", borderRadius: msg.sender === "user" ? "22px 22px 6px 22px" : "22px 22px 22px 6px", background: msg.sender === "user" ? "#FF8b00" : "#2977F5", color: msg.sender === "user" ? "#222" : "#fff", maxWidth: 800, wordBreak: "break-word", fontSize: 21, boxShadow: msg.sender === "user" ? "0 4px 16px #FF8b0033" : "0 2px 8px #2977F533", marginBottom: 2, lineHeight: 1.8, fontWeight: 500 }}>{msg.text}</span>
+              <span style={{
+                display: "inline-block",
+                padding: "18px 28px",
+                borderRadius: msg.sender === "user" ? "22px 22px 6px 22px" : "22px 22px 22px 6px",
+                background: msg.sender === "user" ? "#26272b" : "#23242a",
+                color: "#fff",
+                maxWidth: 800,
+                wordBreak: "break-word",
+                fontSize: 19,
+                boxShadow: msg.sender === "user"
+                  ? "0 2px 8px #0002"
+                  : "0 2px 8px #0002",
+                marginBottom: 2,
+                lineHeight: 1.7,
+                fontWeight: 500,
+                border: msg.sender === "user" ? "1.5px solid #35363a" : "1.5px solid #2a2b2f"
+              }}>{msg.text}</span>
             </div>
           ))}
           <div ref={messagesEndRef} />

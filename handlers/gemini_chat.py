@@ -37,11 +37,16 @@ async def gemini_chat(request: Request):
     api_key = get_gemini_api_key()
     if not api_key:
         return JSONResponse({"reply": "Error: GEMINI_API_KEY not set in environment."}, status_code=500)
-    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={api_key}"
+    api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-latest:generateContent?key={api_key}"
     try:
         resp = requests.post(api_url, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
         rj = resp.json()
-        reply = rj.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Sorry, I couldn't get a response.")
+        reply = rj.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text")
+        if not reply:
+            if rj.get("error", {}).get("status") == "RESOURCE_EXHAUSTED":
+                reply = "Sorry, the AI assistant is currently at its daily or minute usage limit. Please try again later."
+            else:
+                reply = "Sorry, I couldn't get a response from the AI right now. Please try again in a few minutes."
         return JSONResponse({"reply": reply})
-    except Exception as e:
-        return JSONResponse({"reply": f"Error: {str(e)}"}, status_code=500)
+    except Exception:
+        return JSONResponse({"reply": "Sorry, something went wrong while contacting the AI. Please try again soon."}, status_code=500)
