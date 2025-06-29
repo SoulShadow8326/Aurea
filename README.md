@@ -2,7 +2,10 @@
 
 Aurea is a real-time AI-powered assistant that helps users analyze, understand, and improve color palettes in images, with a focus on accessibility and inclusive design. It provides palette extraction, colorblind simulation, and design feedback using Google's Gemini API.
 
-## Run Instructions (Local Hosting)
+## Run Instructions 
+
+you can run chmod +x ./run.sh in root (this builds perm)
+then you can run ./run.sh to do the following
 
 1. Install backend dependencies:
    ```
