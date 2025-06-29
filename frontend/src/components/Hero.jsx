@@ -5,7 +5,7 @@ export default function Hero() {
     <div
       style={{
         width: "100vw",
-        height: "100vh",
+        minHeight: "calc(100vh - 120px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center"
