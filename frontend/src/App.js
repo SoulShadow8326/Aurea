@@ -39,6 +39,8 @@ const TryPage = () => {
   const [notification, setNotification] = useState(null);
   const [result, setResult] = useState(null);
   const [simulateType, setSimulateType] = useState('');
+  const [showUpload, setShowUpload] = useState(true);
+  const [pendingSimType, setPendingSimType] = useState('');
 
   const showNotification = (message, type = 'error') => {
     setNotification({ message, type });
@@ -48,10 +50,13 @@ const TryPage = () => {
   const handleFileSelect = (event) => {
     const files = Array.from(event.target.files);
     setSelectedFiles(files.slice(0, 1));
+    setShowUpload(false);
   };
 
   const removeFile = () => {
     setSelectedFiles([]);
+    setResult(null);
+    setShowUpload(true);
   };
 
   const handleUpload = async (event) => {
@@ -94,17 +99,42 @@ const TryPage = () => {
           <h2 style={{ color: '#2977F5' }}>Analyze Image</h2>
           <button className="back-btn" onClick={() => navigate('/')}>Back</button>
         </div>
-        <div style={{display: 'flex', justifyContent: 'center', marginBottom: 24}}>
-          <select value={simulateType} onChange={e => setSimulateType(e.target.value)} className="simulate-select">
-            <option value="">No Colorblind Simulation</option>
-            <option value="protanopia">Protanopia</option>
-            <option value="deuteranopia">Deuteranopia</option>
-            <option value="tritanopia">Tritanopia</option>
-            <option value="achromatopsia">Achromatopsia</option>
-          </select>
-        </div>
-        <form onSubmit={handleUpload} className="upload-zone" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16}}>
-          {selectedFiles.length > 0 ? (
+        {showUpload ? (
+          <>
+            <div style={{display: 'flex', justifyContent: 'center', marginBottom: 24, gap: 16}}>
+              <select value={simulateType} onChange={e => setSimulateType(e.target.value)} className="simulate-select">
+                <option value="">No Colorblind Simulation</option>
+                <option value="protanopia">Protanopia</option>
+                <option value="deuteranopia">Deuteranopia</option>
+                <option value="tritanopia">Tritanopia</option>
+                <option value="achromatopsia">Achromatopsia</option>
+              </select>
+            </div>
+            <form onSubmit={handleUpload} className="upload-zone" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16}}>
+              <div className="upload-prompt">
+                <div className="upload-icon">+</div>
+                <h3>Drop your image here</h3>
+                <p>or click to browse</p>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="file-input"
+                />
+              </div>
+            </form>
+          </>
+        ) : (
+          <>
+            <div style={{display: 'flex', justifyContent: 'center', marginBottom: 24, gap: 16}}>
+              <select value={simulateType} onChange={e => setSimulateType(e.target.value)} className="simulate-select">
+                <option value="">No Colorblind Simulation</option>
+                <option value="protanopia">Protanopia</option>
+                <option value="deuteranopia">Deuteranopia</option>
+                <option value="tritanopia">Tritanopia</option>
+                <option value="achromatopsia">Achromatopsia</option>
+              </select>
+            </div>
             <div className="files-preview">
               <div className="files-list">
                 <div className="file-item">
@@ -117,55 +147,50 @@ const TryPage = () => {
                 </div>
               </div>
               <div className="upload-actions">
-                <button className="upload-btn" type="submit" disabled={uploading}>
+                <button className="upload-btn" onClick={handleUpload} disabled={uploading}>
                   {uploading ? 'Analyzing...' : 'Analyze'}
                 </button>
                 <button className="cancel-btn" type="button" onClick={removeFile}>
-                  Clear
+                  Select Another Image
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="upload-prompt">
-              <div className="upload-icon">+</div>
-              <h3>Drop your image here</h3>
-              <p>or click to browse</p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileSelect}
-                className="file-input"
-              />
+          </>
+        )}
+        {result && !showUpload && (
+          <div style={{marginTop: 32, width: '100%', maxWidth: 900, background: 'rgba(255,255,255,0.04)', borderRadius: 20, padding: 32, color: '#fff', boxShadow: '0 4px 24px rgba(42,119,245,0.08)', display: 'flex', gap: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
+            <div style={{flex: 1, minWidth: 260, maxWidth: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+              <div style={{fontWeight: 700, marginBottom: 12, fontSize: 20, textAlign: 'center'}}>Palette <span style={{color:'#ff8b00', fontWeight:900, fontSize:22, marginLeft:6}}>*</span></div>
+              <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 10, marginBottom: 8}}>
+                {result.palette && result.palette.map((c, i) => (
+                  <div key={i} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 48}}>
+                    <div style={{width: 38, height: 38, borderRadius: 10, background: c, border: '2px solid #222', position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'}} title={c}></div>
+                    <span style={{marginTop: 6, fontSize: 14, color: '#fff', letterSpacing: 0.5, textAlign: 'center', fontWeight: 700}}>{c}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{fontWeight: 700, marginBottom: 8, fontSize: 18, textAlign: 'center'}}>Original <span style={{color:'#ff8b00', fontWeight:900, fontSize:20, marginLeft:4}}>*</span></div>
+              <div style={{width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 20}}>
+                <img src={result.originalImage} alt="original" style={{maxWidth: 220, borderRadius: 12, boxShadow: '0 2px 8px #2977F533', display: 'block', marginLeft: 'auto', marginRight: 'auto'}} />
+              </div>
+              {result.simulatedImage && (
+                <>
+                  <div style={{fontWeight: 700, marginBottom: 8, fontSize: 18, textAlign: 'center'}}>Simulated <span style={{color:'#ff8b00', fontWeight:900, fontSize:20, marginLeft:4}}>*</span></div>
+                  <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
+                    <img src={result.simulatedImage} alt="simulated" style={{maxWidth: 220, borderRadius: 12, boxShadow: '0 2px 8px #ff8b0033', display: 'block', marginLeft: 'auto', marginRight: 'auto'}} />
+                  </div>
+                </>
+              )}
             </div>
-          )}
-        </form>
-        {result && (
-          <div style={{marginTop: 32, width: '100%', maxWidth: 600, background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: 24, color: '#fff', boxShadow: '0 4px 24px rgba(42,119,245,0.08)'}}>
-            <div style={{display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap'}}>
-              <div style={{flex: 1, minWidth: 180}}>
-                <div style={{fontWeight: 700, marginBottom: 8}}>Palette</div>
-                <div style={{display: 'flex', gap: 8, marginBottom: 16}}>
-                  {result.palette && result.palette.map((c, i) => (
-                    <div key={i} style={{width: 32, height: 32, borderRadius: 8, background: c, border: '2px solid #222'}}></div>
-                  ))}
-                </div>
-                <div style={{fontWeight: 700, marginBottom: 8}}>Original</div>
-                <img src={result.originalImage} alt="original" style={{width: '100%', maxWidth: 180, borderRadius: 8, marginBottom: 16}} />
-                {result.simulatedImage && (
-                  <>
-                    <div style={{fontWeight: 700, marginBottom: 8}}>Simulated</div>
-                    <img src={result.simulatedImage} alt="simulated" style={{width: '100%', maxWidth: 180, borderRadius: 8}} />
-                  </>
-                )}
-              </div>
-              <div style={{flex: 2, minWidth: 220}}>
-                {result.aiAnalysis && (
-                  <>
-                    <div style={{fontWeight: 700, marginBottom: 8}}>AI Analysis</div>
-                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 'rgba(0,0,0,0.18)', borderRadius: 8, padding: 12, color: '#fff', fontSize: 14, marginBottom: 0}}>{JSON.stringify(result.aiAnalysis, null, 2)}</pre>
-                  </>
-                )}
-              </div>
+            <div style={{flex: 2, minWidth: 320, maxWidth: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+              {result.geminiFeedback && (
+                <>
+                  <div style={{fontWeight: 700, marginBottom: 12, fontSize: 20, textAlign: 'center'}}>Gemini Feedback <span style={{color:'#ff8b00', fontWeight:900, fontSize:22, marginLeft:6}}>*</span></div>
+                  <div style={{background: 'rgba(0,0,0,0.18)', borderRadius: 12, padding: 24, color: '#fff', fontSize: 16, marginBottom: 0, lineHeight: 1.7, whiteSpace: 'pre-line', textAlign: 'left', width: '100%'}}>
+                    {result.geminiFeedback}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}

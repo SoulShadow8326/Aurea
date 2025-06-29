@@ -16,4 +16,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(image_router)
+app.include_router(image_router, prefix="/api")
+
+@app.get("/api/health")
+def health():
+    return {"status": "ok"}

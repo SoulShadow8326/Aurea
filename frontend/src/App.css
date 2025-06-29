@@ -894,6 +894,28 @@ body {
   font-weight: 500;
 }
 
+.gemini-input {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  border: 2px solid #2977F5;
+  border-radius: 25px;
+  padding: 0.7rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+  box-shadow: 0 4px 18px rgba(42,119,245,0.08);
+  min-width: 260px;
+  margin: 0 auto;
+  appearance: none;
+  margin-bottom: 0;
+}
+
+.gemini-input:focus {
+  border-color: #1e5fcf;
+  box-shadow: 0 0 0 2px #2977F533;
+}
+
 @media (max-width: 768px) {
   .brand-title {
     font-size: 3rem;
