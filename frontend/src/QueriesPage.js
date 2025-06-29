@@ -122,7 +122,7 @@ export default function QueriesPage() {
 									fontSize: 16,
 									fontWeight: 500,
 									boxShadow: "0 1px 4px #0002",
-									transition: "all 0.35s cubic-bezier(.4,0,.2,1)",
+									transition: "max-height 0.25s cubic-bezier(.4,0,.2,1), opacity 0.18s cubic-bezier(.4,0,.2,1)",
 									overflow: "hidden",
 								}}
 							>

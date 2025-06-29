@@ -58,7 +58,7 @@ export default function ChatPage() {
               Welcome to Aurea Chat
               <div style={{ fontSize: 20, fontWeight: 500, opacity: 0.7, marginTop: 18, maxWidth: 520 }}>
                 Ask anything about color, accessibility, palettes, or design. Powered by Gemini. Try prompts like:<br /><br />
-                <span style={{ color: "#FEAD13", fontWeight: 700 }}>
+                <span style={{ color: "#FF8b00", fontWeight: 700 }}>
                   How do I make my palette more accessible?<br />
                   What mood does this color scheme give?<br />
                   Suggest a palette for a calm, inclusive design.<br />
@@ -68,23 +68,23 @@ export default function ChatPage() {
           )}
           {messages.map((msg, i) => (
             <div key={i} style={{ display: "flex", justifyContent: msg.sender === "user" ? "flex-end" : "flex-start", width: "100%" }}>
-              <span style={{ display: "inline-block", padding: "22px 36px", borderRadius: msg.sender === "user" ? "22px 22px 6px 22px" : "22px 22px 22px 6px", background: msg.sender === "user" ? "#FEAD13" : "rgba(35,43,62,0.97)", color: msg.sender === "user" ? "#222" : "#fff", maxWidth: 800, wordBreak: "break-word", fontSize: 21, boxShadow: msg.sender === "user" ? "0 4px 16px #FEAD1333" : "0 2px 8px #0002", marginBottom: 2, lineHeight: 1.8, fontWeight: 500 }}>{msg.text}</span>
+              <span style={{ display: "inline-block", padding: "22px 36px", borderRadius: msg.sender === "user" ? "22px 22px 6px 22px" : "22px 22px 22px 6px", background: msg.sender === "user" ? "#FF8b00" : "#2977F5", color: msg.sender === "user" ? "#222" : "#fff", maxWidth: 800, wordBreak: "break-word", fontSize: 21, boxShadow: msg.sender === "user" ? "0 4px 16px #FF8b0033" : "0 2px 8px #2977F533", marginBottom: 2, lineHeight: 1.8, fontWeight: 500 }}>{msg.text}</span>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
-        <div style={{ padding: "36px 64px", borderTop: "1.5px solid #23283a", background: "rgba(24,28,36,0.10)", display: "flex", flexDirection: "row", gap: 18, alignItems: "flex-end" }}>
+        <div style={{ padding: "36px 64px", borderTop: "1.5px solid #23283a", background: "rgba(24,28,36,0.10)", display: "flex", flexDirection: "row", gap: 18, alignItems: "stretch" }}>
           <textarea
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             rows={1}
-            style={{ flex: 1, resize: "none", borderRadius: 20, border: "1.5px solid #23283a", padding: "18px 24px", fontSize: 20, background: "rgba(35,43,62,0.45)", color: "#fff", outline: "none", boxShadow: "0 2px 8px #0002", minHeight: 56, maxHeight: 180, lineHeight: 1.7, fontWeight: 500 }}
+            style={{ flex: 1, resize: "none", borderRadius: 20, border: "1.5px solid #23283a", padding: "0 24px", fontSize: 20, background: "rgba(35,43,62,0.45)", color: "#fff", outline: "none", boxShadow: "0 2px 8px #0002", minHeight: 56, maxHeight: 56, lineHeight: "56px", fontWeight: 500, height: 56 }}
             placeholder="Type your message..."
           />
           <button
             onClick={sendMessage}
-            style={{ background: "#FEAD13", color: "#222", border: "none", borderRadius: 18, padding: "0 38px", fontWeight: 800, fontSize: 21, cursor: "pointer", boxShadow: "0 2px 12px #FEAD1333", height: 56, minWidth: 56, display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: 0.2, transition: "background 0.15s" }}
+            style={{ background: "#2977F5", color: "#fff", border: "none", borderRadius: 18, padding: "0 38px", fontWeight: 800, fontSize: 21, cursor: "pointer", boxShadow: "0 2px 12px #2977F533", height: 56, minWidth: 56, display: "flex", alignItems: "center", justifyContent: "center", letterSpacing: 0.2, transition: "background 0.15s" }}
           >
             Send
           </button>
