@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 import './palette.css';
 import AppRoutes from './components';
 import ChatPopup from './ChatPopup';
+import ChatOverlay from './ChatOverlay';
+import ChatPage from './ChatPage';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -14,7 +16,7 @@ const HomePage = () => {
         <div className="hero-content">
           <h1 className="brand-title">Aurea</h1>
           <p className="hero-description">Your personal palette accessibility tool</p>
-          <div className="action-buttons">
+          <div className="action-buttons" style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', gap: 16, marginTop: 16}}>
             <button 
               className="primary-btn" 
               onClick={() => navigate('/try')}
@@ -28,6 +30,13 @@ const HomePage = () => {
               About Us
             </button>
           </div>
+          <button 
+            className="secondary-btn" 
+            style={{marginTop: 18, background: "rgba(255,255,255,0.20)", color: "#222", fontWeight: 700, border: "none", boxShadow: "none"}}
+            onClick={() => navigate('/queries')}
+          >
+            FAQ
+          </button>
         </div>
       </div>
     </div>
@@ -222,15 +231,26 @@ const AboutPage = () => {
 };
 
 function App() {
+  const [chatOverlayOpen, setChatOverlayOpen] = useState(false);
+  const location = useLocation();
+  const showChatPopup = location.pathname !== '/chat';
+
   return (
-    <Router>
-      <div className="App">
-        <AppRoutes />
-        <ChatPopup />
-      </div>
-    </Router>
+    <div className="App">
+      <AppRoutes />
+      {showChatPopup && <ChatPopup onOpenChat={() => setChatOverlayOpen(true)} />}
+      <ChatOverlay open={chatOverlayOpen} onClose={() => setChatOverlayOpen(false)}>
+        <ChatPage onClose={() => setChatOverlayOpen(false)} />
+      </ChatOverlay>
+    </div>
   );
 }
 
 export { HomePage, TryPage, AboutPage };
-export default App;
+export default function AppWithRouter() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}

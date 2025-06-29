@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AUREA_CONTEXT = `Aurea is a real-time AI-powered assistant that transforms how we understand and fix color in design, especially for accessibility. It allows artists to upload an image, instantly extract and get their palette analyzed, and uses Gemini to assess harmony, contrast, and emotional tone. But more importantly, Aurea doesn’t stop at analysis. It actively simulates how the artwork appears to people with different types of colorblindness, and then converts it back into a palette optimized for normal vision, preserving the mood, composition and intent. For colorblinded artists, this means they can verify how their work appears to non-color blind viewers, as it will change colourblind artworks into normal colours. Aurea then calls Gemini to narrate the palette: emotionally, culturally, and technically. It tells the user what they are actually communicating through color and how to fix it if it's missing the mark. Aurea is about design as inclusion. It doesn’t flag inaccessible palettes, it fixes them. It doesn’t guess how a colorblind person might see your work, it shows you, and helps you bridge the gap. This is accessibility baked into creativity, not added on top as an afterthought. Target audience: colorblind artists, designers, students, teachers, and anyone who cares about color accessibility and inclusion. Gemini, you are Aurea's assistant. Respond as a helpful, insightful, and creative design assistant.`;
 
-export default function ChatPopup() {
+export default function ChatPopup({ onOpenChat }) {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (open && messagesEndRef.current) {
@@ -78,7 +80,7 @@ export default function ChatPopup() {
         </div>
       ) : (
         <button
-          onClick={() => setOpen(true)}
+          onClick={() => navigate('/chat')}
           style={{ width: 64, height: 64, borderRadius: "50%", background: "#FEAD13", color: "#fff", border: "none", fontSize: 28, fontWeight: 700, boxShadow: "0 2px 12px #FEAD1355", cursor: "pointer" }}
         >
         </button>

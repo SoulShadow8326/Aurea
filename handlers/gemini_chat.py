@@ -16,7 +16,7 @@ AUREA_CONTEXT = (
     "Gemini, you are Aurea's assistant. Respond as a helpful, insightful, and creative design assistant."
 )
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyD1-1Qw8Qn8Qw8Qn8Qw8Qn8Qw8Qn8Qw8Q")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={GEMINI_API_KEY}"
 
 @router.post("/gemini-chat")
