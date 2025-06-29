@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, useNavigate } from 'react-router-dom';
 import './App.css';
+import './palette.css';
 import AppRoutes from './components';
+import ChatPopup from './ChatPopup';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const HomePage = () => {
               className="secondary-btn" 
               onClick={() => navigate('/about')}
             >
-              About
+              About Us
             </button>
           </div>
         </div>
@@ -158,37 +160,37 @@ const TryPage = () => {
           </>
         )}
         {result && !showUpload && (
-          <div style={{marginTop: 32, width: '100%', maxWidth: 900, background: 'rgba(255,255,255,0.04)', borderRadius: 20, padding: 32, color: '#fff', boxShadow: '0 4px 24px rgba(42,119,245,0.08)', display: 'flex', gap: 40, justifyContent: 'center', alignItems: 'flex-start'}}>
-            <div style={{flex: 1, minWidth: 260, maxWidth: 320, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
-              <div style={{fontWeight: 700, marginBottom: 12, fontSize: 20, textAlign: 'center'}}>Palette <span style={{color:'#ff8b00', fontWeight:900, fontSize:22, marginLeft:6}}>*</span></div>
-              <div style={{width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'flex-end', gap: 10, marginBottom: 8}}>
-                {result.palette && result.palette.map((c, i) => (
-                  <div key={i} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: 48}}>
-                    <div style={{width: 38, height: 38, borderRadius: 10, background: c, border: '2px solid #222', position: 'relative', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center'}} title={c}></div>
-                    <span style={{marginTop: 6, fontSize: 14, color: '#fff', letterSpacing: 0.5, textAlign: 'center', fontWeight: 700}}>{c}</span>
-                  </div>
-                ))}
+          <div className="palette-section">
+            <div className="palette-col">
+              <div className="palette-label">Original</div>
+              <div className="palette-img-row">
+                <img src={result.originalImage} alt="original" className="palette-img" />
               </div>
-              <div style={{fontWeight: 700, marginBottom: 8, fontSize: 18, textAlign: 'center'}}>Original <span style={{color:'#ff8b00', fontWeight:900, fontSize:20, marginLeft:4}}>*</span></div>
-              <div style={{width: '100%', display: 'flex', justifyContent: 'center', marginBottom: 20}}>
-                <img src={result.originalImage} alt="original" style={{maxWidth: 220, borderRadius: 12, boxShadow: '0 2px 8px #2977F533', display: 'block', marginLeft: 'auto', marginRight: 'auto'}} />
-              </div>
+            </div>
+            <div className="palette-col">
               {result.simulatedImage && (
                 <>
-                  <div style={{fontWeight: 700, marginBottom: 8, fontSize: 18, textAlign: 'center'}}>Simulated <span style={{color:'#ff8b00', fontWeight:900, fontSize:20, marginLeft:4}}>*</span></div>
-                  <div style={{width: '100%', display: 'flex', justifyContent: 'center'}}>
-                    <img src={result.simulatedImage} alt="simulated" style={{maxWidth: 220, borderRadius: 12, boxShadow: '0 2px 8px #ff8b0033', display: 'block', marginLeft: 'auto', marginRight: 'auto'}} />
+                  <div className="palette-label">Simulated</div>
+                  <div className="palette-img-row">
+                    <img src={result.simulatedImage} alt="simulated" className="palette-img" />
                   </div>
                 </>
               )}
             </div>
-            <div style={{flex: 2, minWidth: 320, maxWidth: 500, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'}}>
+            <div className="palette-col">
+              <div className="palette-label">Palette</div>
+              <div className="palette-row" style={{flexDirection: 'column', alignItems: 'flex-start'}}>
+                {result.palette && result.palette.map((c, i) => (
+                  <div key={i} className="palette-swatch-col" style={{display: 'flex', alignItems: 'center', marginBottom: 8}}>
+                    <div className="palette-swatch" style={{background: c, width: 32, height: 32, marginRight: 8}} title={c}></div>
+                    <span className="palette-swatch-label">{c}</span>
+                  </div>
+                ))}
+              </div>
               {result.geminiFeedback && (
                 <>
-                  <div style={{fontWeight: 700, marginBottom: 12, fontSize: 20, textAlign: 'center'}}>Gemini Feedback <span style={{color:'#ff8b00', fontWeight:900, fontSize:22, marginLeft:6}}>*</span></div>
-                  <div style={{background: 'rgba(0,0,0,0.18)', borderRadius: 12, padding: 24, color: '#fff', fontSize: 16, marginBottom: 0, lineHeight: 1.7, whiteSpace: 'pre-line', textAlign: 'left', width: '100%'}}>
-                    {result.geminiFeedback}
-                  </div>
+                  <div className="palette-label" style={{marginTop: 16}}>Gemini Feedback</div>
+                  <div className="palette-feedback">{result.geminiFeedback}</div>
                 </>
               )}
             </div>
@@ -224,6 +226,7 @@ function App() {
     <Router>
       <div className="App">
         <AppRoutes />
+        <ChatPopup />
       </div>
     </Router>
   );

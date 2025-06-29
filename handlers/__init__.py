@@ -1,0 +1,3 @@
+from .gemini_chat import router as gemini_chat_router
+
+# ...existing code...
