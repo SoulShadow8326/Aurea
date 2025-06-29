@@ -37,6 +37,8 @@ const TryPage = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [notification, setNotification] = useState(null);
+  const [result, setResult] = useState(null);
+  const [simulateType, setSimulateType] = useState('');
 
   const showNotification = (message, type = 'error') => {
     setNotification({ message, type });
@@ -56,14 +58,18 @@ const TryPage = () => {
     event.preventDefault();
     if (selectedFiles.length === 0) return;
     setUploading(true);
+    setResult(null);
     const formData = new FormData();
     formData.append('file', selectedFiles[0]);
+    if (simulateType) formData.append('simulateType', simulateType);
     try {
-      const response = await fetch('/api/analyze', {
+      const response = await fetch('/api/image', {
         method: 'POST',
         body: formData,
       });
       if (response.ok) {
+        const data = await response.json();
+        setResult(data);
         showNotification('Analysis complete', 'success');
       } else {
         showNotification('Analysis failed');
@@ -87,6 +93,15 @@ const TryPage = () => {
         <div className="page-header">
           <h2 style={{ color: '#2977F5' }}>Analyze Image</h2>
           <button className="back-btn" onClick={() => navigate('/')}>Back</button>
+        </div>
+        <div style={{display: 'flex', justifyContent: 'center', marginBottom: 24}}>
+          <select value={simulateType} onChange={e => setSimulateType(e.target.value)} className="simulate-select">
+            <option value="">No Colorblind Simulation</option>
+            <option value="protanopia">Protanopia</option>
+            <option value="deuteranopia">Deuteranopia</option>
+            <option value="tritanopia">Tritanopia</option>
+            <option value="achromatopsia">Achromatopsia</option>
+          </select>
         </div>
         <form onSubmit={handleUpload} className="upload-zone" style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16}}>
           {selectedFiles.length > 0 ? (
@@ -124,6 +139,36 @@ const TryPage = () => {
             </div>
           )}
         </form>
+        {result && (
+          <div style={{marginTop: 32, width: '100%', maxWidth: 600, background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: 24, color: '#fff', boxShadow: '0 4px 24px rgba(42,119,245,0.08)'}}>
+            <div style={{display: 'flex', gap: 24, alignItems: 'flex-start', flexWrap: 'wrap'}}>
+              <div style={{flex: 1, minWidth: 180}}>
+                <div style={{fontWeight: 700, marginBottom: 8}}>Palette</div>
+                <div style={{display: 'flex', gap: 8, marginBottom: 16}}>
+                  {result.palette && result.palette.map((c, i) => (
+                    <div key={i} style={{width: 32, height: 32, borderRadius: 8, background: c, border: '2px solid #222'}}></div>
+                  ))}
+                </div>
+                <div style={{fontWeight: 700, marginBottom: 8}}>Original</div>
+                <img src={result.originalImage} alt="original" style={{width: '100%', maxWidth: 180, borderRadius: 8, marginBottom: 16}} />
+                {result.simulatedImage && (
+                  <>
+                    <div style={{fontWeight: 700, marginBottom: 8}}>Simulated</div>
+                    <img src={result.simulatedImage} alt="simulated" style={{width: '100%', maxWidth: 180, borderRadius: 8}} />
+                  </>
+                )}
+              </div>
+              <div style={{flex: 2, minWidth: 220}}>
+                {result.aiAnalysis && (
+                  <>
+                    <div style={{fontWeight: 700, marginBottom: 8}}>AI Analysis</div>
+                    <pre style={{whiteSpace: 'pre-wrap', wordBreak: 'break-word', background: 'rgba(0,0,0,0.18)', borderRadius: 8, padding: 12, color: '#fff', fontSize: 14, marginBottom: 0}}>{JSON.stringify(result.aiAnalysis, null, 2)}</pre>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
