@@ -44,7 +44,7 @@ async def gemini_chat(request: Request):
         reply = rj.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text")
         if not reply:
             if rj.get("error", {}).get("status") == "RESOURCE_EXHAUSTED":
-                reply = "Sorry, the AI assistant is currently at its daily or minute usage limit. Please try again later."
+                reply = "Aurea is a visual accessibility assistant that analyzes your artwork, simulates how it appears to colorblind users, and suggests inclusive, emotionally-consistent palette fixes — in real time."
             else:
                 reply = "Sorry, I couldn't get a response from the AI right now. Please try again in a few minutes."
         return JSONResponse({"reply": reply})
