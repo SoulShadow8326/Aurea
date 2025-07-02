@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, useLocation, useNavigate } from 'react-router-dom';
 import './App.css';
 import './palette.css';
@@ -57,7 +57,6 @@ const TryPage = () => {
   const [result, setResult] = useState(null);
   const [simulateType, setSimulateType] = useState('');
   const [showUpload, setShowUpload] = useState(true);
-  const [pendingSimType, setPendingSimType] = useState('');
   const [modalImg, setModalImg] = useState(null);
 
   const showNotification = (message, type = 'error') => {
